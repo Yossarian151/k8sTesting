@@ -1,50 +1,41 @@
-IN THIS DEMO WE DEMONSTRATE PODs functionality
-How you can start the pod using YAML and CLI.
-1) We launch ngimx  docker container on K8s with Kubectl.
+# Demo1: Demonstrating how you can start the pod using YAML and CLI.
 
-#Launch a single docker container:
-kubectl run nginxv1 --image=nginx:1.10.0
+## Launch nginx  docker container on K8s with kubectl
 
-#Get pods
-kubectl get pods
+1. Launch a single docker container:
+`kubectl run nginxv1 --image=nginx:1.10.0`
 
+2. Get pods
+`kubectl get pods`
 
+## Launch nginx docker container on K8s with manifest (YAML or JSON).
 
-1) We launch nginx  docker container on K8s with Kubectl.
+1. Chek config file
+`cat pods/monolith.yaml`
 
-!!!! Kubernetes supports two different file formats YAML and JSON. Each format can describe the same function of K8s:
+2. Create the monolith pod
+`kubectl create -f pods/monolith.yaml`
 
-#Another way. Using a Yaml file:
-#Create a Container usimg YAML file
-#Chek config file
-cat pods/monolith.yaml
+3. Examine pods
+`kubectl get pods`
 
+4. Info about the Pod. And troubleshooting:
+`kubectl describe pods monolith`
 
-#Create the monolith pod
-kubectl create -f pods/monolith.yaml
+## Exposing Pods without services
 
+Pods allocated private IP by default, it can not reach outside of  the cluster
 
-#Examine pods
-kubectl get pods
+1. Set up port-forwarding
+`kubectl port-forward monolith 10080:80`
 
-#Info about the Pod. And troubleshooting:
-kubectl describe pods monolith
+2. Check if App is working:
+`curl http://127.0.0.1:10080`
 
+**It works!**
 
-###Pods allocated private IP by default, it can not reach outside of  the
-cluster
-#Set up port-forwarding
-kubectl port-forward monolith 10080:80
+## Troubleshooting
+`kubectl exec monolith --stdin --tty -c monolith /bin/sh`
 
-#Check if App is working:
-curl http://127.0.0.1:10080
-
-It works!
-
-#In Case need to troubleshoot:
-kubectl exec monolith --stdin --tty -c monolith /bin/sh
-
-# Check Dasboard View
-
-#Delete Pods
-kubectl delete
+##Delete Pods
+`kubectl delete`

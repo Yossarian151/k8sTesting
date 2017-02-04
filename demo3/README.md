@@ -1,63 +1,70 @@
-##Demo "Happy Birthday K8s" application. App will show hostname of POD
-It's running in.
-##Demo App was written in "go" and pushed to docker registry.
-###K8s will fetch our "Happy Birthday K8s" application. from docker Registry
-#And deploy pod, service, deployment.
-#We going to test how Replicaton Controllr puts cluster to desired state.
-#Scale Cluster
-#Do Rolling Update of new version of the App.
+#Demo 3: Create docker container of "Happy Birthday K8s" application.
+This Demo App was written in "go" and supposed to be pushed to docker registry.
+K8s will fetch our "Happy Birthday K8s" application. from docker Registry
+and deploy pod, service, deployment. Farther we going to test how Replicaton
+Controller puts cluster to desired state. We will than Scale Application and
+perform Rolling Update of new version of the App.
 
-###Create Docker image:
-chmod +x ./build.sh
-./build.sh
-docker build -t archyufa/webk8sbirthday:1.0.4 .
-docker push archyufa/webk8sbirthday:1.0.4
+1. Create Docker image:
 
-#Show configs with 3 replicas.
-cat kdemo/kdemo-dep.yaml
+`cd ../demo3`
+`chmod +x ./build.sh`
+`./build.sh`
+`docker build -t archyufa/webk8sbirthday:1.0.4 .`
+`docker push archyufa/webk8sbirthday:1.0.4`
 
-###Create Deployment:
-### Alternative: kubectl run kdemo --image=archyufa/webk8sbirthday:1.0.3 --port=8080
+2. Show configs with 3 replicas.
 
-kubectl create -f kdemo/kdemo-dep.yaml
+`cat kdemo/kdemo-dep.yaml`
 
-#Check pods:
-kubectl get pods
+3. Create Deployment:
 
-###Create and than expose a Service:
-### Alternative:  kubectl expose deployment/kdemo --type=NodePort
-kubectl create -f kdemo/kdemo-svc.yaml
+*Option 1:*
+`kubectl run kdemo --image=archyufa/webk8sbirthday:1.0.3 --port=8080`
 
+*Option 2:*
+`kubectl create -f kdemo/kdemo-dep.yaml`
 
+4. Check pods:
 
-###Find Expose Endpoint:
-minikube ip
-kubectl get svc kdemo -o wide
-kubectl describe svc/kdemo
+`kubectl get pods`
 
+5. Create and than expose a Service:
 
-#Let's see how RC works.
+*Option 1:*
+`kubectl expose deployment/kdemo --type=NodePort`
 
-###Second screen
-while :; do clear; k get pod; sleep 2; done
+*Option 2:*
+`kubectl create -f kdemo/kdemo-svc.yaml`
 
-#Let's kill 1 container. So that we will have 2 containers
-docker ps |
+6. Find Expose Endpoint:
 
-#Let's kill a pod:
-kubectl get pods
-kubectl delete pod
+`minikube ip`
+`kubectl get svc kdemo -o wide`
+`kubectl describe svc/kdemo`
 
-###Scale
-kubectl scale deployment/kdemo --replicas=6
-kubectl scale deployment/kdemo --replicas=9
-kubectl scale deployment/kdemo --replicas=5
+## Demo of Replication Controllers and reconsalation loop
 
-###Rolling Update
+1. Open second screen and run:
+`while :; do clear; k get pod; sleep 2; done`
 
-kubectl edit deployment/kdemo
+2. Let's kill 1 container. So that we will have 2 containers out of 3.
+
+`kubectl get pods`
+`kubectl delete pod`
+
+## Demo Scaling pods
+`kubectl scale deployment/kdemo --replicas=6`
+`kubectl scale deployment/kdemo --replicas=9`
+`kubectl scale deployment/kdemo --replicas=5`
+
+## Demo Rolling Update of app
+
+`kubectl edit deployment/kdemo`
 Change to (image: archyufa/webk8sbirthday:1.0.4)
-### Rollback
-kubectl edit deployment/kdemo
-kubectl rollout
-kubectl rollout undo deployment/kdemo
+
+## Rollback
+
+`kubectl edit deployment/kdemo`
+`kubectl rollout`
+`kubectl rollout undo deployment/kdemo`
